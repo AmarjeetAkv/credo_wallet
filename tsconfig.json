@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.build.json",
+  "ts-node": {
+    "require": ["tsconfig-paths/register"],
+    "files": true
+  },
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "credo-controller/*": ["*/src"]
+    },
+    "lib": ["ES2021.Promise"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "types": ["jest", "node"]
+  },
+  "exclude": ["node_modules", "build"]
+}
