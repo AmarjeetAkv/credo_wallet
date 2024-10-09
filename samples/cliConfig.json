@@ -3,7 +3,7 @@
   "walletId": "sample",
   "walletKey": "sample",
   "walletType": "postgres",
-  "walletUrl": "192.168.1.12:5432",
+  "walletUrl": "0.0.0.0:5432",
   "walletAccount": "postgres",
   "walletPassword": "postgres",
   "walletAdminAccount": "postgres",
@@ -23,7 +23,7 @@
       "indyNamespace": "bcovrin:testnet"
     }
   ],
-  "endpoint": ["http://localhost:4002"],
+  "endpoint": ["54.172.68.213:4002"],
   "autoAcceptConnections": true,
   "autoAcceptCredentials": "always",
   "autoAcceptProofs": "contentApproved",
