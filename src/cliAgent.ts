@@ -154,10 +154,6 @@ const getModules = (
       registries: [new IndyVdrAnonCredsRegistry()],
       anoncreds,
     }),
-    mediationRecipient: new MediationRecipientModule({
-      mediatorInvitationUrl: 'https://http-mediator.nborbit.com?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIzN2UwYjMxZC0yYWNiLTRjZDMtOTY1MS04NmMzOTFjZGNkZDAiLCAicmVjaXBpZW50S2V5cyI6IFsiOGVtajVaUFVZWkFEWldSdFJTN0xhWXFYOXl6eHdxR0ZGeWFGcHhBUUZ1dSJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaHR0cC1tZWRpYXRvci5uYm9yYml0LmNvbSIsICJsYWJlbCI6ICJNZWRpYXRvciJ9',
-      mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
-    }),
 
 
     connections: new ConnectionsModule({
