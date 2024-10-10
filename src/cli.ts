@@ -223,9 +223,9 @@ export async function runCliServer() {
         type: parsed['wallet-type'],
         config: {
           host: parsed['wallet-url'],
-          connectTimeout: parsed['wallet-connect-timeout'] || Number(process.env.CONNECT_TIMEOUT),
-          maxConnections: parsed['wallet-max-connections'] || Number(process.env.MAX_CONNECTIONS),
-          idleTimeout: parsed['wallet-idle-timeout'] || Number(process.env.IDLE_TIMEOUT),
+          connectTimeout: 10,
+          maxConnections: 2,
+          idleTimeout: 30,
         },
         credentials: {
           account: parsed['wallet-account'],
