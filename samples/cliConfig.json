@@ -23,7 +23,7 @@
       "indyNamespace": "bcovrin:testnet"
     }
   ],
-  "endpoint": ["http://54.172.68.213:4002"],
+  "endpoint": ["http://54.172.68.213:4002","ws://54.172.68.213:4002"],
   "autoAcceptConnections": true,
   "autoAcceptCredentials": "always",
   "autoAcceptProofs": "contentApproved",
@@ -32,9 +32,13 @@
     {
       "transport": "http",
       "port": 4002
+    },
+    {
+      "transport": "ws",
+      "port": 4002
     }
   ],
-  "outboundTransport": ["http"],
+  "outboundTransport": ["http","ws"],
   "adminPort": 4001,
   "tenancy": true,
   "schemaFileServerURL": "https://schema.credebl.id/schemas/",
