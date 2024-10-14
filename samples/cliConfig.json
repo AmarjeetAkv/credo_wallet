@@ -34,7 +34,7 @@
       "port": 4002
     }
   ],
-  "outboundTransport": ["http","ws"],
+  "outboundTransport": ["http"],
   "adminPort": 4001,
   "tenancy": true,
   "schemaFileServerURL": "https://schema.credebl.id/schemas/",
