@@ -23,19 +23,15 @@
       "indyNamespace": "bcovrin:testnet"
     }
   ],
-  "endpoint": ["127.0.0.1:4004","ws://127.0.0.1"],
+  "endpoint": ["54.172.68.213:4002"],
   "autoAcceptConnections": true,
   "autoAcceptCredentials": "always",
   "autoAcceptProofs": "contentApproved",
   "logLevel": 2,
   "inboundTransport": [
     {
-      "transport": "ws",
-      "port": 4003
-    },
-    {
       "transport": "http",
-      "port": 4004
+      "port": 4002
     }
   ],
   "outboundTransport": ["http"],
