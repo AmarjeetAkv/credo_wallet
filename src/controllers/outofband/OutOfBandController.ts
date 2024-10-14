@@ -239,6 +239,7 @@ export class OutOfBandController extends Controller {
   @Post('/receive-invitation')
   public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps) {
     const { invitation, ...config } = invitationRequest
+    console.log("invitation data receive" , invitation)
 
     try {
       function isDidKey(key: string) {
@@ -284,15 +285,13 @@ export class OutOfBandController extends Controller {
         outOfBandInvitation.invitationType = InvitationType.Connection
         return outOfBandInvitation
       }
-      const invite = new OutOfBandInvitation({ ...invitation, handshakeProtocols: invitation.handshake_protocols })
       const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(invitation, ConnectionInvitationMessage))
       console.log("message from oob invitaion", oobInvitation)
-      const { outOfBandRecord, connectionRecord } = await this.agent.oob.receiveInvitation(oobInvitation, {autoAcceptConnection: true,
+      const { outOfBandRecord} = await this.agent.oob.receiveInvitation(oobInvitation, {autoAcceptConnection: true,
         autoAcceptInvitation: true,})
 
       return {
-        outOfBandRecord: outOfBandRecord.toJSON(),
-        connectionRecord: connectionRecord?.toJSON(),
+        outOfBandRecord: outOfBandRecord.toJSON()
       }
     } catch (error) {
       throw ErrorHandlingService.handle(error)
