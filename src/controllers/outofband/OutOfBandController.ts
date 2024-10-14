@@ -270,6 +270,7 @@ export class OutOfBandController extends Controller {
         } else {
           throw new Error('Missing required serviceEndpoint, routingKeys and/or did fields in connection invitation')
         }
+        console.log ("oob invitaion gtest line 273 ")
         const options: OutOfBandInvitationOptions = {
           id: oldInvitation.id,
           label: oldInvitation.label,
@@ -282,6 +283,7 @@ export class OutOfBandController extends Controller {
           handshakeProtocols: ['https://didcomm.org/connections/1.0'],
         }
         const outOfBandInvitation = new OutOfBandInvitation(options)
+        console.log ("oob invitaion ", outOfBandInvitation)
         outOfBandInvitation.invitationType = InvitationType.Connection
         return outOfBandInvitation
       }
