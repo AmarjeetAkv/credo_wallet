@@ -3,7 +3,7 @@
   "walletId": "sample",
   "walletKey": "sample",
   "walletType": "postgres",
-  "walletUrl": "54.172.68.213:5432",
+  "walletUrl": "192.168.1.5:5432",
   "walletAccount": "postgres",
   "walletPassword": "postgres",
   "walletAdminAccount": "postgres",
@@ -23,15 +23,19 @@
       "indyNamespace": "bcovrin:testnet"
     }
   ],
-  "endpoint": ["http://54.172.68.213:4002"],
+  "endpoint": ["127.0.0.1:4004","ws://127.0.0.1"],
   "autoAcceptConnections": true,
   "autoAcceptCredentials": "always",
   "autoAcceptProofs": "contentApproved",
   "logLevel": 2,
   "inboundTransport": [
     {
+      "transport": "ws",
+      "port": 4003
+    },
+    {
       "transport": "http",
-      "port": 4002
+      "port": 4004
     }
   ],
   "outboundTransport": ["http"],

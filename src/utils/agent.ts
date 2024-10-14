@@ -27,6 +27,8 @@ import {
   ConnectionInvitationMessage,
   HttpOutboundTransport,
   LogLevel,
+  MediationRecipientModule,
+  MediatorPickupStrategy,
 } from '@credo-ts/core'
 import { IndyVdrAnonCredsRegistry, IndyVdrModule } from '@credo-ts/indy-vdr'
 import { agentDependencies, HttpInboundTransport } from '@credo-ts/node'
@@ -73,6 +75,10 @@ export const setupAgent = async ({ name, endpoints, port }: { name: string; endp
       anoncreds: new AnonCredsModule({
         registries: [new IndyVdrAnonCredsRegistry()],
         anoncreds,
+      }),
+      mediationRecipient: new MediationRecipientModule({
+        mediatorInvitationUrl: 'https://http-mediator.nborbit.com?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIzN2UwYjMxZC0yYWNiLTRjZDMtOTY1MS04NmMzOTFjZGNkZDAiLCAicmVjaXBpZW50S2V5cyI6IFsiOGVtajVaUFVZWkFEWldSdFJTN0xhWXFYOXl6eHdxR0ZGeWFGcHhBUUZ1dSJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaHR0cC1tZWRpYXRvci5uYm9yYml0LmNvbSIsICJsYWJlbCI6ICJNZWRpYXRvciJ9',
+        mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
       }),
 
       dids: new DidsModule({
@@ -144,6 +150,6 @@ export const setupAgent = async ({ name, endpoints, port }: { name: string; endp
   })
 
   await agent.initialize()
-
+  console.log('Agent initialize: ',agent);
   return agent
 }

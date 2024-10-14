@@ -76,4 +76,3 @@ COPY --from=builder /app/patches ./patches
 
 # Set entry point
 ENTRYPOINT ["node", "./bin/afj-rest.js", "start"]
-

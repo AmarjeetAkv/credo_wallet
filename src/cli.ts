@@ -132,6 +132,8 @@ async function parseArguments(): Promise<Parsed> {
       array: true,
       coerce: (input) => {
         const transports: InboundTransport[] = []
+        console.log('Input: ',input)
+        console.log('transports: ',transports)
         for (const item of input) {
           if (
             typeof item === 'object' &&
@@ -223,9 +225,9 @@ export async function runCliServer() {
         type: parsed['wallet-type'],
         config: {
           host: parsed['wallet-url'],
-          connectTimeout: 100,
-          maxConnections: 2,
-          idleTimeout: 30,
+          connectTimeout: 1000,
+          maxConnections: 10,
+          idleTimeout: 2000,
         },
         credentials: {
           account: parsed['wallet-account'],

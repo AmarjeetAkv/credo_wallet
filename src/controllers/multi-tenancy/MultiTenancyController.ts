@@ -131,9 +131,9 @@ export class MultiTenancyController extends Controller {
           result = await this.handleWeb(createDidOptions, tenantId)
           break
 
-        case DidMethod.Polygon:
-          result = await this.handlePolygon(createDidOptions, tenantId)
-          break
+        // case DidMethod.Polygon:
+        //   result = await this.handlePolygon(createDidOptions, tenantId)
+        //   break
 
         case DidMethod.Peer:
           result = await this.handleDidPeer(createDidOptions, tenantId)
@@ -509,40 +509,40 @@ export class MultiTenancyController extends Controller {
     return { did, didDocument }
   }
 
-  public async handlePolygon(createDidOptions: DidCreate, tenantId: string) {
-    let createDidResponse
-    let didResponse
-    await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
-      // need to discuss try catch logic
+  // public async handlePolygon(createDidOptions: DidCreate, tenantId: string) {
+  //   let createDidResponse
+  //   let didResponse
+  //   await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
+  //     // need to discuss try catch logic
 
-      const networkDetails = createDidOptions.network
-      const networkName = networkDetails?.split(':')[1]
+  //     const networkDetails = createDidOptions.network
+  //     const networkName = networkDetails?.split(':')[1]
 
-      const { endpoint, privatekey } = createDidOptions
-      if (networkName !== 'mainnet' && networkName !== 'testnet') {
-        throw Error('Invalid network type')
-      }
-      if (!privatekey || typeof privatekey !== 'string' || !privatekey.trim() || privatekey.length !== 64) {
-        throw Error('Invalid private key or not supported')
-      }
+  //     const { endpoint, privatekey } = createDidOptions
+  //     if (networkName !== 'mainnet' && networkName !== 'testnet') {
+  //       throw Error('Invalid network type')
+  //     }
+  //     if (!privatekey || typeof privatekey !== 'string' || !privatekey.trim() || privatekey.length !== 64) {
+  //       throw Error('Invalid private key or not supported')
+  //     }
 
-      createDidResponse = await tenantAgent.dids.create<PolygonDidCreateOptions>({
-        method: DidMethod.Polygon,
-        options: {
-          network: networkName,
-          endpoint,
-        },
-        secret: {
-          privateKey: TypedArrayEncoder.fromHex(`${privatekey}`),
-        },
-      })
-      didResponse = {
-        did: createDidResponse?.didState?.did,
-        didDoc: createDidResponse?.didState?.didDocument,
-      }
-    })
-    return didResponse
-  }
+  //     createDidResponse = await tenantAgent.dids.create<PolygonDidCreateOptions>({
+  //       method: DidMethod.Polygon,
+  //       options: {
+  //         network: networkName,
+  //         endpoint,
+  //       },
+  //       secret: {
+  //         privateKey: TypedArrayEncoder.fromHex(`${privatekey}`),
+  //       },
+  //     })
+  //     didResponse = {
+  //       did: createDidResponse?.didState?.did,
+  //       didDoc: createDidResponse?.didState?.didDocument,
+  //     }
+  //   })
+  //   return didResponse
+  // }
 
   private async importDid(didMethod: string, did: string, seed: string, tenantAgent: TenantAgent<RestAgentModules>) {
     await tenantAgent.dids.import({
@@ -926,83 +926,83 @@ export class MultiTenancyController extends Controller {
     }
   }
 
-  @Security('apiKey')
-  @Post('/polygon-wc3/schema/:tenantId')
-  public async createPolygonW3CSchema(
-    @Body()
-    createSchemaRequest: {
-      did: string
-      schemaName: string
-      schema: { [key: string]: any }
-    },
-    @Path('tenantId') tenantId: string
-  ): Promise<SchemaMetadata> {
-    try {
-      const { did, schemaName, schema } = createSchemaRequest
-      if (!did || !schemaName || !schema) {
-        throw new BadRequestError('One or more parameters are empty or undefined.')
-      }
+  // @Security('apiKey')
+  // @Post('/polygon-wc3/schema/:tenantId')
+  // public async createPolygonW3CSchema(
+  //   @Body()
+  //   createSchemaRequest: {
+  //     did: string
+  //     schemaName: string
+  //     schema: { [key: string]: any }
+  //   },
+  //   @Path('tenantId') tenantId: string
+  // ): Promise<SchemaMetadata> {
+  //   try {
+  //     const { did, schemaName, schema } = createSchemaRequest
+  //     if (!did || !schemaName || !schema) {
+  //       throw new BadRequestError('One or more parameters are empty or undefined.')
+  //     }
 
-      const schemaResponse = await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
-        return await tenantAgent.modules.polygon.createSchema({
-          did,
-          schemaName,
-          schema,
-        })
-      })
-      if (schemaResponse.schemaState?.state === CredentialEnum.Failed) {
-        const reason = schemaResponse.schemaState?.reason?.toLowerCase()
-        if (reason && reason.includes('insufficient') && reason.includes('funds')) {
-          throw new PaymentRequiredError(
-            'Insufficient funds to the address, Please add funds to perform this operation'
-          )
-        } else {
-          throw new InternalServerError(schemaResponse.schemaState?.reason)
-        }
-      }
-      const configFileData = fs.readFileSync('config.json', 'utf-8')
-      const config = JSON.parse(configFileData)
-      if (!config.schemaFileServerURL) {
-        throw new UnprocessableEntityError('Please provide valid schema file server URL')
-      }
+  //     const schemaResponse = await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
+  //       return await tenantAgent.modules.polygon.createSchema({
+  //         did,
+  //         schemaName,
+  //         schema,
+  //       })
+  //     })
+  //     if (schemaResponse.schemaState?.state === CredentialEnum.Failed) {
+  //       const reason = schemaResponse.schemaState?.reason?.toLowerCase()
+  //       if (reason && reason.includes('insufficient') && reason.includes('funds')) {
+  //         throw new PaymentRequiredError(
+  //           'Insufficient funds to the address, Please add funds to perform this operation'
+  //         )
+  //       } else {
+  //         throw new InternalServerError(schemaResponse.schemaState?.reason)
+  //       }
+  //     }
+  //     const configFileData = fs.readFileSync('config.json', 'utf-8')
+  //     const config = JSON.parse(configFileData)
+  //     if (!config.schemaFileServerURL) {
+  //       throw new UnprocessableEntityError('Please provide valid schema file server URL')
+  //     }
 
-      if (!schemaResponse?.schemaId) {
-        throw new InternalServerError('Error in getting schema response')
-      }
-      const schemaPayload: SchemaMetadata = {
-        schemaUrl: config.schemaFileServerURL + schemaResponse?.schemaId,
-        did: schemaResponse?.did,
-        schemaId: schemaResponse?.schemaId,
-        schemaTxnHash: schemaResponse?.resourceTxnHash,
-      }
+  //     if (!schemaResponse?.schemaId) {
+  //       throw new InternalServerError('Error in getting schema response')
+  //     }
+  //     const schemaPayload: SchemaMetadata = {
+  //       schemaUrl: config.schemaFileServerURL + schemaResponse?.schemaId,
+  //       did: schemaResponse?.did,
+  //       schemaId: schemaResponse?.schemaId,
+  //       schemaTxnHash: schemaResponse?.resourceTxnHash,
+  //     }
 
-      return schemaPayload
-    } catch (error) {
-      throw ErrorHandlingService.handle(error)
-    }
-  }
+  //     return schemaPayload
+  //   } catch (error) {
+  //     throw ErrorHandlingService.handle(error)
+  //   }
+  // }
 
-  @Security('apiKey')
-  @Get('polygon-wc3/schema/:did/:schemaId/:tenantId')
-  public async getPolygonW3CSchemaById(
-    @Path('tenantId') tenantId: string,
-    @Path('did') did: string,
-    @Path('schemaId') schemaId: string
-  ) {
-    try {
-      let schemaDetails
+  // @Security('apiKey')
+  // @Get('polygon-wc3/schema/:did/:schemaId/:tenantId')
+  // public async getPolygonW3CSchemaById(
+  //   @Path('tenantId') tenantId: string,
+  //   @Path('did') did: string,
+  //   @Path('schemaId') schemaId: string
+  // ) {
+  //   try {
+  //     let schemaDetails
 
-      if (!tenantId || !did || !schemaId) {
-        throw new BadRequestError('Missing or invalid parameters.')
-      }
-      await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
-        schemaDetails = await tenantAgent.modules.polygon.getSchemaById(did, schemaId)
-      })
-      return schemaDetails
-    } catch (error) {
-      throw ErrorHandlingService.handle(error)
-    }
-  }
+  //     if (!tenantId || !did || !schemaId) {
+  //       throw new BadRequestError('Missing or invalid parameters.')
+  //     }
+  //     await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
+  //       schemaDetails = await tenantAgent.modules.polygon.getSchemaById(did, schemaId)
+  //     })
+  //     return schemaDetails
+  //   } catch (error) {
+  //     throw ErrorHandlingService.handle(error)
+  //   }
+  // }
 
   @Security('apiKey')
   @Post('/transactions/write/:tenantId')

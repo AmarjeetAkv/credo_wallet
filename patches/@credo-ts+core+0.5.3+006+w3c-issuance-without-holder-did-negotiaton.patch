@@ -1,3 +1,23 @@
+diff --git a/node_modules/@credo-ts/core/build/modules/connections/services/ConnectionService.js b/node_modules/@credo-ts/core/build/modules/connections/services/ConnectionService.js
+index 66885c7..e556bf4 100644
+--- a/node_modules/@credo-ts/core/build/modules/connections/services/ConnectionService.js
++++ b/node_modules/@credo-ts/core/build/modules/connections/services/ConnectionService.js
+@@ -657,6 +657,7 @@ let ConnectionService = class ConnectionService {
+     }
+     async returnWhenIsConnected(agentContext, connectionId, timeoutMs = 20000) {
+         const isConnected = (connection) => {
++            console.log('isConnected in ConnectionServie: ',connection);
+             return connection.id === connectionId && connection.state === models_1.DidExchangeState.Completed;
+         };
+         const observable = this.eventEmitter.observable(ConnectionEvents_1.ConnectionEventTypes.ConnectionStateChanged);
+@@ -669,6 +670,7 @@ let ConnectionService = class ConnectionService {
+         }))
+             .subscribe(subject);
+         const connection = await this.getById(agentContext, connectionId);
++        console.log('connetion in ConnectionServie: ',connection);
+         if (isConnected(connection)) {
+             subject.next(connection);
+         }
 diff --git a/node_modules/@credo-ts/core/build/modules/credentials/protocol/v2/V2CredentialProtocol.js b/node_modules/@credo-ts/core/build/modules/credentials/protocol/v2/V2CredentialProtocol.js
 index fb1fb9d..b519694 100644
 --- a/node_modules/@credo-ts/core/build/modules/credentials/protocol/v2/V2CredentialProtocol.js

@@ -5,7 +5,7 @@ import { TsoaRoute, fetchMiddlewares, ExpressTemplateService } from '@tsoa/runti
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProofController } from './../controllers/proofs/ProofController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { Polygon } from './../controllers/polygon/PolygonController';
+// import { Polygon } from './../controllers/polygon/PolygonController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { OutOfBandController } from './../controllers/outofband/OutOfBandController';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -585,7 +585,6 @@ const models: TsoaRoute.Models = {
             "issuanceDate": {"dataType":"string","required":true},
             "expirationDate": {"dataType":"string"},
             "credentialSubject": {"ref":"SingleOrArray_JsonObject_","required":true},
-            "prettyVc": {"dataType":"any"},
         },
         "additionalProperties": {"dataType":"any"},
     },
@@ -1150,18 +1149,11 @@ const templateService = new ExpressTemplateService(models, {"noImplicitAdditiona
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-
-
-
 export function RegisterRoutes(app: Router) {
-
     // ###########################################################################################################
     //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
     //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
     // ###########################################################################################################
-
-
-    
         app.get('/proofs',
             authenticateMiddleware([{"apiKey":[]}]),
             ...(fetchMiddlewares<RequestHandler>(ProofController)),
@@ -1487,149 +1479,149 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/polygon/create-keys',
-            authenticateMiddleware([{"apiKey":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(Polygon)),
-            ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.createKeyPair)),
+        // app.post('/polygon/create-keys',
+        //     authenticateMiddleware([{"apiKey":[]}]),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon)),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.createKeyPair)),
 
-            async function Polygon_createKeyPair(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-            };
+        //     async function Polygon_createKeyPair(request: ExRequest, response: ExResponse, next: any) {
+        //     const args: Record<string, TsoaRoute.ParameterSchema> = {
+        //     };
 
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        //     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+        //     let validatedArgs: any[] = [];
+        //     try {
+        //         validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+        //         const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
-                const controller: any = await container.get<Polygon>(Polygon);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
+        //         const controller: any = await container.get<Polygon>(Polygon);
+        //         if (typeof controller['setStatus'] === 'function') {
+        //         controller.setStatus(undefined);
+        //         }
 
-              await templateService.apiHandler({
-                methodName: 'createKeyPair',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
+        //       await templateService.apiHandler({
+        //         methodName: 'createKeyPair',
+        //         controller,
+        //         response,
+        //         next,
+        //         validatedArgs,
+        //         successStatus: undefined,
+        //       });
+        //     } catch (err) {
+        //         return next(err);
+        //     }
+        // });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/polygon/create-schema',
-            authenticateMiddleware([{"apiKey":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(Polygon)),
-            ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.createSchema)),
+        // app.post('/polygon/create-schema',
+        //     authenticateMiddleware([{"apiKey":[]}]),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon)),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.createSchema)),
 
-            async function Polygon_createSchema(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    createSchemaRequest: {"in":"body","name":"createSchemaRequest","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"schema":{"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"required":true},"schemaName":{"dataType":"string","required":true},"did":{"dataType":"string","required":true}}},
-            };
+        //     async function Polygon_createSchema(request: ExRequest, response: ExResponse, next: any) {
+        //     const args: Record<string, TsoaRoute.ParameterSchema> = {
+        //             createSchemaRequest: {"in":"body","name":"createSchemaRequest","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"schema":{"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"required":true},"schemaName":{"dataType":"string","required":true},"did":{"dataType":"string","required":true}}},
+        //     };
 
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        //     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+        //     let validatedArgs: any[] = [];
+        //     try {
+        //         validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+        //         const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
-                const controller: any = await container.get<Polygon>(Polygon);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
+        //         const controller: any = await container.get<Polygon>(Polygon);
+        //         if (typeof controller['setStatus'] === 'function') {
+        //         controller.setStatus(undefined);
+        //         }
 
-              await templateService.apiHandler({
-                methodName: 'createSchema',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
+        //       await templateService.apiHandler({
+        //         methodName: 'createSchema',
+        //         controller,
+        //         response,
+        //         next,
+        //         validatedArgs,
+        //         successStatus: undefined,
+        //       });
+        //     } catch (err) {
+        //         return next(err);
+        //     }
+        // });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/polygon/estimate-transaction',
-            authenticateMiddleware([{"apiKey":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(Polygon)),
-            ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.estimateTransaction)),
+        // app.post('/polygon/estimate-transaction',
+        //     authenticateMiddleware([{"apiKey":[]}]),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon)),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.estimateTransaction)),
 
-            async function Polygon_estimateTransaction(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    estimateTransactionRequest: {"in":"body","name":"estimateTransactionRequest","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"transaction":{"dataType":"any","required":true},"operation":{"dataType":"any","required":true}}},
-            };
+        //     async function Polygon_estimateTransaction(request: ExRequest, response: ExResponse, next: any) {
+        //     const args: Record<string, TsoaRoute.ParameterSchema> = {
+        //             estimateTransactionRequest: {"in":"body","name":"estimateTransactionRequest","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"transaction":{"dataType":"any","required":true},"operation":{"dataType":"any","required":true}}},
+        //     };
 
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        //     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+        //     let validatedArgs: any[] = [];
+        //     try {
+        //         validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+        //         const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
-                const controller: any = await container.get<Polygon>(Polygon);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
+        //         const controller: any = await container.get<Polygon>(Polygon);
+        //         if (typeof controller['setStatus'] === 'function') {
+        //         controller.setStatus(undefined);
+        //         }
 
-              await templateService.apiHandler({
-                methodName: 'estimateTransaction',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
+        //       await templateService.apiHandler({
+        //         methodName: 'estimateTransaction',
+        //         controller,
+        //         response,
+        //         next,
+        //         validatedArgs,
+        //         successStatus: undefined,
+        //       });
+        //     } catch (err) {
+        //         return next(err);
+        //     }
+        // });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/polygon/:did/:schemaId',
-            authenticateMiddleware([{"apiKey":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(Polygon)),
-            ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.getSchemaById)),
+        // app.get('/polygon/:did/:schemaId',
+        //     authenticateMiddleware([{"apiKey":[]}]),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon)),
+        //     ...(fetchMiddlewares<RequestHandler>(Polygon.prototype.getSchemaById)),
 
-            async function Polygon_getSchemaById(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    did: {"in":"path","name":"did","required":true,"dataType":"string"},
-                    schemaId: {"in":"path","name":"schemaId","required":true,"dataType":"string"},
-            };
+        //     async function Polygon_getSchemaById(request: ExRequest, response: ExResponse, next: any) {
+        //     const args: Record<string, TsoaRoute.ParameterSchema> = {
+        //             did: {"in":"path","name":"did","required":true,"dataType":"string"},
+        //             schemaId: {"in":"path","name":"schemaId","required":true,"dataType":"string"},
+        //     };
 
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        //     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+        //     let validatedArgs: any[] = [];
+        //     try {
+        //         validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+        //         const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
-                const controller: any = await container.get<Polygon>(Polygon);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
+        //         const controller: any = await container.get<Polygon>(Polygon);
+        //         if (typeof controller['setStatus'] === 'function') {
+        //         controller.setStatus(undefined);
+        //         }
 
-              await templateService.apiHandler({
-                methodName: 'getSchemaById',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
+        //       await templateService.apiHandler({
+        //         methodName: 'getSchemaById',
+        //         controller,
+        //         response,
+        //         next,
+        //         validatedArgs,
+        //         successStatus: undefined,
+        //       });
+        //     } catch (err) {
+        //         return next(err);
+        //     }
+        // });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.get('/oob',
             authenticateMiddleware([{"apiKey":[]}]),
@@ -2476,80 +2468,80 @@ export function RegisterRoutes(app: Router) {
             }
         });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.post('/multi-tenancy/polygon-wc3/schema/:tenantId',
-            authenticateMiddleware([{"apiKey":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(MultiTenancyController)),
-            ...(fetchMiddlewares<RequestHandler>(MultiTenancyController.prototype.createPolygonW3CSchema)),
+        // app.post('/multi-tenancy/polygon-wc3/schema/:tenantId',
+        //     authenticateMiddleware([{"apiKey":[]}]),
+        //     ...(fetchMiddlewares<RequestHandler>(MultiTenancyController)),
+        //     ...(fetchMiddlewares<RequestHandler>(MultiTenancyController.prototype.createPolygonW3CSchema)),
 
-            async function MultiTenancyController_createPolygonW3CSchema(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    createSchemaRequest: {"in":"body","name":"createSchemaRequest","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"schema":{"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"required":true},"schemaName":{"dataType":"string","required":true},"did":{"dataType":"string","required":true}}},
-                    tenantId: {"in":"path","name":"tenantId","required":true,"dataType":"string"},
-            };
+        //     async function MultiTenancyController_createPolygonW3CSchema(request: ExRequest, response: ExResponse, next: any) {
+        //     const args: Record<string, TsoaRoute.ParameterSchema> = {
+        //             createSchemaRequest: {"in":"body","name":"createSchemaRequest","required":true,"dataType":"nestedObjectLiteral","nestedProperties":{"schema":{"dataType":"nestedObjectLiteral","nestedProperties":{},"additionalProperties":{"dataType":"any"},"required":true},"schemaName":{"dataType":"string","required":true},"did":{"dataType":"string","required":true}}},
+        //             tenantId: {"in":"path","name":"tenantId","required":true,"dataType":"string"},
+        //     };
 
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        //     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+        //     let validatedArgs: any[] = [];
+        //     try {
+        //         validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+        //         const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
-                const controller: any = await container.get<MultiTenancyController>(MultiTenancyController);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
+        //         const controller: any = await container.get<MultiTenancyController>(MultiTenancyController);
+        //         if (typeof controller['setStatus'] === 'function') {
+        //         controller.setStatus(undefined);
+        //         }
 
-              await templateService.apiHandler({
-                methodName: 'createPolygonW3CSchema',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
+        //       await templateService.apiHandler({
+        //         methodName: 'createPolygonW3CSchema',
+        //         controller,
+        //         response,
+        //         next,
+        //         validatedArgs,
+        //         successStatus: undefined,
+        //       });
+        //     } catch (err) {
+        //         return next(err);
+        //     }
+        // });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-        app.get('/multi-tenancy/polygon-wc3/schema/:did/:schemaId/:tenantId',
-            authenticateMiddleware([{"apiKey":[]}]),
-            ...(fetchMiddlewares<RequestHandler>(MultiTenancyController)),
-            ...(fetchMiddlewares<RequestHandler>(MultiTenancyController.prototype.getPolygonW3CSchemaById)),
+        // app.get('/multi-tenancy/polygon-wc3/schema/:did/:schemaId/:tenantId',
+        //     authenticateMiddleware([{"apiKey":[]}]),
+        //     ...(fetchMiddlewares<RequestHandler>(MultiTenancyController)),
+        //     ...(fetchMiddlewares<RequestHandler>(MultiTenancyController.prototype.getPolygonW3CSchemaById)),
 
-            async function MultiTenancyController_getPolygonW3CSchemaById(request: ExRequest, response: ExResponse, next: any) {
-            const args: Record<string, TsoaRoute.ParameterSchema> = {
-                    tenantId: {"in":"path","name":"tenantId","required":true,"dataType":"string"},
-                    did: {"in":"path","name":"did","required":true,"dataType":"string"},
-                    schemaId: {"in":"path","name":"schemaId","required":true,"dataType":"string"},
-            };
+        //     async function MultiTenancyController_getPolygonW3CSchemaById(request: ExRequest, response: ExResponse, next: any) {
+        //     const args: Record<string, TsoaRoute.ParameterSchema> = {
+        //             tenantId: {"in":"path","name":"tenantId","required":true,"dataType":"string"},
+        //             did: {"in":"path","name":"did","required":true,"dataType":"string"},
+        //             schemaId: {"in":"path","name":"schemaId","required":true,"dataType":"string"},
+        //     };
 
-            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        //     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
-            let validatedArgs: any[] = [];
-            try {
-                validatedArgs = templateService.getValidatedArgs({ args, request, response });
+        //     let validatedArgs: any[] = [];
+        //     try {
+        //         validatedArgs = templateService.getValidatedArgs({ args, request, response });
 
-                const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
+        //         const container: IocContainer = typeof iocContainer === 'function' ? (iocContainer as IocContainerFactory)(request) : iocContainer;
 
-                const controller: any = await container.get<MultiTenancyController>(MultiTenancyController);
-                if (typeof controller['setStatus'] === 'function') {
-                controller.setStatus(undefined);
-                }
+        //         const controller: any = await container.get<MultiTenancyController>(MultiTenancyController);
+        //         if (typeof controller['setStatus'] === 'function') {
+        //         controller.setStatus(undefined);
+        //         }
 
-              await templateService.apiHandler({
-                methodName: 'getPolygonW3CSchemaById',
-                controller,
-                response,
-                next,
-                validatedArgs,
-                successStatus: undefined,
-              });
-            } catch (err) {
-                return next(err);
-            }
-        });
+        //       await templateService.apiHandler({
+        //         methodName: 'getPolygonW3CSchemaById',
+        //         controller,
+        //         response,
+        //         next,
+        //         validatedArgs,
+        //         successStatus: undefined,
+        //       });
+        //     } catch (err) {
+        //         return next(err);
+        //     }
+        // });
         // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
         app.post('/multi-tenancy/transactions/write/:tenantId',
             authenticateMiddleware([{"apiKey":[]}]),

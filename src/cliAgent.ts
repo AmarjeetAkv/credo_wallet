@@ -2,7 +2,7 @@ import type { InitConfig } from '@credo-ts/core'
 import type { WalletConfig } from '@credo-ts/core/build/types'
 import type { IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
 
-import { PolygonDidRegistrar, PolygonDidResolver, PolygonModule } from '@ayanworks/credo-polygon-w3c-module'
+// import { PolygonDidRegistrar, PolygonDidResolver, PolygonModule } from '@ayanworks/credo-polygon-w3c-module'
 import {
   AnonCredsCredentialFormatService,
   AnonCredsModule,
@@ -36,6 +36,7 @@ import {
   DifPresentationExchangeProofFormatService,
   MediationRecipientModule,
   MediatorPickupStrategy,
+  ConnectionInvitationMessage,
 } from '@credo-ts/core'
 import {
   IndyVdrAnonCredsRegistry,
@@ -57,6 +58,10 @@ import jwt from 'jsonwebtoken'
 import { IndicioAcceptanceMechanism, IndicioTransactionAuthorAgreement, Network, NetworkName } from './enums/enum'
 import { setupServer } from './server'
 import { TsLogger } from './utils/logger'
+import { Server, WebSocketServer } from 'ws'
+import express from 'express'
+import { Socket } from 'dgram'
+
 
 export type Transports = 'ws' | 'http'
 export type InboundTransport = {
@@ -146,8 +151,8 @@ const getModules = (
     }),
 
     dids: new DidsModule({
-      registrars: [new IndyVdrIndyDidRegistrar(), new KeyDidRegistrar(), new PolygonDidRegistrar()],
-      resolvers: [new IndyVdrIndyDidResolver(), new KeyDidResolver(), new WebDidResolver(), new PolygonDidResolver()],
+      registrars: [new IndyVdrIndyDidRegistrar(), new KeyDidRegistrar()],
+      resolvers: [new IndyVdrIndyDidResolver(), new KeyDidResolver(), new WebDidResolver()],
     }),
 
     anoncreds: new AnonCredsModule({
@@ -158,8 +163,6 @@ const getModules = (
       mediatorInvitationUrl: 'https://http-mediator.nborbit.com?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIzN2UwYjMxZC0yYWNiLTRjZDMtOTY1MS04NmMzOTFjZGNkZDAiLCAicmVjaXBpZW50S2V5cyI6IFsiOGVtajVaUFVZWkFEWldSdFJTN0xhWXFYOXl6eHdxR0ZGeWFGcHhBUUZ1dSJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaHR0cC1tZWRpYXRvci5uYm9yYml0LmNvbSIsICJsYWJlbCI6ICJNZWRpYXRvciJ9',
       mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
     }),
-
-
     connections: new ConnectionsModule({
       autoAcceptConnections: autoAcceptConnections || true,
     }),
@@ -195,13 +198,13 @@ const getModules = (
     }),
 
     questionAnswer: new QuestionAnswerModule(),
-    polygon: new PolygonModule({
-      didContractAddress: didRegistryContractAddress ? didRegistryContractAddress : (process.env.DID_CONTRACT_ADDRESS as string),
-      schemaManagerContractAddress: schemaManagerContractAddress || (process.env.SCHEMA_MANAGER_CONTRACT_ADDRESS as string),
-      fileServerToken: fileServerToken ? fileServerToken : (process.env.FILE_SERVER_TOKEN as string),
-      rpcUrl: rpcUrl ? rpcUrl : (process.env.RPC_URL as string),
-      serverUrl: fileServerUrl ? fileServerUrl : (process.env.SERVER_URL as string),
-    }),
+    // polygon: new PolygonModule({
+    //   didContractAddress: didRegistryContractAddress ? didRegistryContractAddress : (process.env.DID_CONTRACT_ADDRESS as string),
+    //   schemaManagerContractAddress: schemaManagerContractAddress || (process.env.SCHEMA_MANAGER_CONTRACT_ADDRESS as string),
+    //   fileServerToken: fileServerToken ? fileServerToken : (process.env.FILE_SERVER_TOKEN as string),
+    //   rpcUrl: rpcUrl ? rpcUrl : (process.env.RPC_URL as string),
+    //   serverUrl: fileServerUrl ? fileServerUrl : (process.env.SERVER_URL as string),
+    // }),
   }
 }
 
@@ -280,12 +283,15 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
 
   const logger = new TsLogger(logLevel ?? LogLevel.error)
 
-  const agentConfig: InitConfig = {
+  const agentConfig:any = {
     walletConfig: {
       id: walletConfig.id,
       key: walletConfig.key,
       storage: walletConfig.storage,
     },
+    // mediatorConnectionsInvite: 'https://http-mediator.nborbit.com?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIzN2UwYjMxZC0yYWNiLTRjZDMtOTY1MS04NmMzOTFjZGNkZDAiLCAicmVjaXBpZW50S2V5cyI6IFsiOGVtajVaUFVZWkFEWldSdFJTN0xhWXFYOXl6eHdxR0ZGeWFGcHhBUUZ1dSJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaHR0cC1tZWRpYXRvci5uYm9yYml0LmNvbSIsICJsYWJlbCI6ICJNZWRpYXRvciJ9',
+    // mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
+    endpoints:['127.0.0.1:5000'],
     ...afjConfig,
     logger,
     autoUpdateStorageOnStartup: true,
@@ -385,8 +391,46 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
     },
     dependencies: agentDependencies,
   })
+  const config = agent.config
+
+  const apps = express()
+  // console.log('Apps:',apps);  
+  // const wsTransport = new WsOutboundTransport()
+  // const httpTransport = new HttpOutboundTransport()
+  // const socketServer = new WebSocketServer({ port:4003,host:'127.0.0.1' })
+  // // console.log('socketServer:',socketServer)
+  // const wsInboundTransport = new WsInboundTransport({server:socketServer})
+  // const httpInbound = new HttpInboundTransport({
+  //   port: 4003
+  // })
+
+  // agent.registerOutboundTransport(wsTransport)
+  // agent.registerOutboundTransport(httpTransport)
+  // agent.registerInboundTransport(wsInboundTransport)
+  // agent.registerInboundTransport(httpInbound);
+
+  // httpInbound.app.get('/invitation', async (req, res) => {
+  //   if (typeof req.query.d_m === 'string') {
+  //     const invitation = await ConnectionInvitationMessage.fromUrl(req.url.replace('d_m=', 'c_i='))
+  //     console.log('invitation:1',invitation)
+  //     res.send(invitation.toJSON())
+  //   }
+  //   if (typeof req.query.c_i === 'string') {
+  //     const invitation = await ConnectionInvitationMessage.fromUrl(req.url)
+  //     console.log('invitation:2',invitation)
+  //     res.send(invitation.toJSON())
+  //   } else {
+  //     const { outOfBandInvitation } = await agent.oob.createInvitation()
+  //     // const endpoint = await connect(3001)
+  //     const httpEndpoint = config.endpoints.find((e) => e.startsWith('http'))
+  //     console.log('HttpsEndpoint',httpEndpoint)
+  //     res.send(outOfBandInvitation.toUrl({ domain: httpEndpoint + '/invitation' }))
+  //   }
+  // })
 
   // Register outbound transports
+  console.log('outboundTransports: ',outboundTransports)
+  console.log('inboundTransports: ',inboundTransports)
   for (const outboundTransport of outboundTransports) {
     const OutboundTransport = outboundTransportMapping[outboundTransport]
     agent.registerOutboundTransport(new OutboundTransport())
@@ -395,7 +439,7 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   // Register inbound transports
   for (const inboundTransport of inboundTransports) {
     const InboundTransport = inboundTransportMapping[inboundTransport.transport]
-    agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port }))
+    agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'127.0.0.1' }))
   }
 
   await agent.initialize()
