@@ -1,9 +1,11 @@
 import type { RestAgentModules } from '../../cliAgent'
 import type { OutOfBandInvitationProps, OutOfBandRecordWithInvitationProps } from '../examples'
 import type { AgentMessageType, RecipientKeyOption, CreateInvitationOptions } from '../types'
-import type {
+import {
+  ConnectionInvitationMessage,
   ConnectionRecordProps,
   CreateLegacyInvitationConfig,
+  OutOfBandInvitationOptions,
   PeerDidNumAlgo2CreateOptions,
   Routing,
 } from '@credo-ts/core'
@@ -17,6 +19,9 @@ import {
   KeyType,
   createPeerDidDocumentFromServices,
   PeerDidNumAlgo,
+  OutOfBandDidCommService,
+  InvitationType,
+  DidKey,
 } from '@credo-ts/core'
 import { injectable } from 'tsyringe'
 
@@ -236,8 +241,54 @@ export class OutOfBandController extends Controller {
     const { invitation, ...config } = invitationRequest
 
     try {
+      function isDidKey(key: string) {
+        return isDid(key, 'key')
+      }
+      function isDid(potentialDid: string, method?: string) {
+        return method ? potentialDid.startsWith(`did:${method}:`) : potentialDid.startsWith('did:')
+      }
+      function verkeyToDidKey(key: string) {
+        if (isDidKey(key)) return key
+        const publicKeyBase58 = key
+        const ed25519Key = Key.fromPublicKeyBase58(publicKeyBase58, KeyType.Ed25519)
+        const didKey = new DidKey(ed25519Key)
+        return didKey.did
+      }
+      
+      function convertToNewInvitation(oldInvitation: ConnectionInvitationMessage) {
+        let service
+        if (oldInvitation.did) {
+          service = oldInvitation.did
+        } else if (oldInvitation.serviceEndpoint && oldInvitation.recipientKeys && oldInvitation.recipientKeys.length > 0) {
+          service = new OutOfBandDidCommService({
+            id: '#inline',
+            recipientKeys: oldInvitation.recipientKeys?.map(verkeyToDidKey),
+            routingKeys: oldInvitation.routingKeys?.map(verkeyToDidKey),
+            serviceEndpoint: oldInvitation.serviceEndpoint,
+          })
+        } else {
+          throw new Error('Missing required serviceEndpoint, routingKeys and/or did fields in connection invitation')
+        }
+        const options: OutOfBandInvitationOptions = {
+          id: oldInvitation.id,
+          label: oldInvitation.label,
+          imageUrl: oldInvitation.imageUrl,
+          appendedAttachments: oldInvitation.appendedAttachments,
+          accept: ['didcomm/aip1', 'didcomm/aip2;env=rfc19'],
+          services: [service],
+          // NOTE: we hardcode it to 1.0, we won't see support for newer versions of the protocol
+          // and we also can process 1.0 if we support newer versions
+          handshakeProtocols: ['https://didcomm.org/connections/1.0'],
+        }
+        const outOfBandInvitation = new OutOfBandInvitation(options)
+        outOfBandInvitation.invitationType = InvitationType.Connection
+        return outOfBandInvitation
+      }
       const invite = new OutOfBandInvitation({ ...invitation, handshakeProtocols: invitation.handshake_protocols })
-      const { outOfBandRecord, connectionRecord } = await this.agent.oob.receiveInvitation(invite, config)
+      const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(invitation, ConnectionInvitationMessage))
+      console.log("message from oob invitaion", oobInvitation)
+      const { outOfBandRecord, connectionRecord } = await this.agent.oob.receiveInvitation(oobInvitation, {autoAcceptConnection: true,
+        autoAcceptInvitation: true,})
 
       return {
         outOfBandRecord: outOfBandRecord.toJSON(),
