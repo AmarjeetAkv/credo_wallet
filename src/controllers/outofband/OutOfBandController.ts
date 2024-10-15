@@ -1,9 +1,13 @@
 import type { RestAgentModules } from '../../cliAgent'
 import type { OutOfBandInvitationProps, OutOfBandRecordWithInvitationProps } from '../examples'
 import type { AgentMessageType, RecipientKeyOption, CreateInvitationOptions } from '../types'
-import type {
+import { convertToNewInvitation } from '@credo-ts/core/build/modules/oob/helpers'
+import {
+  ConnectionInvitationMessage,
+  // ConnectionInvitationMessage,
   ConnectionRecordProps,
   CreateLegacyInvitationConfig,
+  OutOfBandInvitationOptions,
   PeerDidNumAlgo2CreateOptions,
   Routing,
 } from '@credo-ts/core'
@@ -17,6 +21,9 @@ import {
   KeyType,
   createPeerDidDocumentFromServices,
   PeerDidNumAlgo,
+  DidKey,
+  OutOfBandDidCommService,
+  InvitationType,
 } from '@credo-ts/core'
 import { injectable } from 'tsyringe'
 
@@ -236,17 +243,27 @@ export class OutOfBandController extends Controller {
     const { invitation, ...config } = invitationRequest
 
     try {
-      const invite = new OutOfBandInvitation({ ...invitation, handshakeProtocols: invitation.handshake_protocols })
-      const { outOfBandRecord, connectionRecord } = await this.agent.oob.receiveInvitation(invite, config)
-
+      const transformedInvitation = JsonTransformer.fromJSON(invitationRequest, ConnectionInvitationMessage);
+      console.log('Transformed Invitation:', transformedInvitation);
+    } catch (error) {
+      console.error('Error during transformation:', error);
+    }
+    
+    try {
+      const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(invitationRequest, ConnectionInvitationMessage))
+      console.log("message from oob invitaion", oobInvitation)
+      const { outOfBandRecord,connectionRecord} = await this.agent.oob.receiveInvitation(oobInvitation, {autoAcceptConnection: true,
+        autoAcceptInvitation: true,})
+        console.log('connection record',connectionRecord)
       return {
         outOfBandRecord: outOfBandRecord.toJSON(),
-        connectionRecord: connectionRecord?.toJSON(),
+        connectionRecord: connectionRecord?.toJSON()
       }
     } catch (error) {
       throw ErrorHandlingService.handle(error)
     }
   }
+
 
   /**
    * Creates inbound out-of-band record and assigns out-of-band invitation message to it if the
