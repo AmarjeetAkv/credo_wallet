@@ -1,9 +1,13 @@
 import type { RestAgentModules } from '../../cliAgent'
 import type { OutOfBandInvitationProps, OutOfBandRecordWithInvitationProps } from '../examples'
 import type { AgentMessageType, RecipientKeyOption, CreateInvitationOptions } from '../types'
-import type {
+import { convertToNewInvitation } from '@credo-ts/core/build/modules/oob/helpers'
+import {
+  ConnectionInvitationMessage,
+  // ConnectionInvitationMessage,
   ConnectionRecordProps,
   CreateLegacyInvitationConfig,
+  OutOfBandInvitationOptions,
   PeerDidNumAlgo2CreateOptions,
   Routing,
 } from '@credo-ts/core'
@@ -17,6 +21,9 @@ import {
   KeyType,
   createPeerDidDocumentFromServices,
   PeerDidNumAlgo,
+  DidKey,
+  OutOfBandDidCommService,
+  InvitationType,
 } from '@credo-ts/core'
 import { injectable } from 'tsyringe'
 
@@ -234,19 +241,36 @@ export class OutOfBandController extends Controller {
   @Post('/receive-invitation')
   public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps) {
     const { invitation, ...config } = invitationRequest
-
+    let data = {
+      "@type": "https://didcomm.org/connections/1.0/invitation",
+      "@id": "98357233-7362-4859-82d1-2b2467afc389",
+      "label": "issuer_acapy_1_0 Agent",
+      "recipientKeys": [
+       "GnnTMB2saJZn2bcQNGepZSJF5nPDBrZTUNRjmGbsfTWh"
+      ],
+      "serviceEndpoint": "http://100.28.204.79:9013"
+    }
+    console.log('invitationRequest: ',JSON.stringify(invitationRequest,null,2));
     try {
-      const invite = new OutOfBandInvitation({ ...invitation, handshakeProtocols: invitation.handshake_protocols })
-      const { outOfBandRecord, connectionRecord } = await this.agent.oob.receiveInvitation(invite, config)
+      const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(data, ConnectionInvitationMessage))
+      console.log("message from oob invitaion", oobInvitation)
+      const { outOfBandRecord,connectionRecord} = await this.agent.oob.receiveInvitation(oobInvitation, {
+          autoAcceptConnection: true,
+          autoAcceptInvitation: true,
+      })
+
+      console.log('connection record',connectionRecord)
+      console.log('outOfBandRecord record ',outOfBandRecord);
 
       return {
         outOfBandRecord: outOfBandRecord.toJSON(),
-        connectionRecord: connectionRecord?.toJSON(),
+        connectionRecord: connectionRecord?.toJSON()
       }
     } catch (error) {
       throw ErrorHandlingService.handle(error)
     }
   }
+
 
   /**
    * Creates inbound out-of-band record and assigns out-of-band invitation message to it if the
