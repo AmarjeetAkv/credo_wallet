@@ -241,7 +241,7 @@ public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps
   const { invitation, ...config } = invitationRequest;
   console.log("Invitation data received:", invitation);
   function convertToNewInvitation(oldInvitation: ConnectionInvitationMessage) {
-    let service;
+    let service:any
     
     if (oldInvitation.did) {
       service = oldInvitation.did;
@@ -252,9 +252,10 @@ public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps
         routingKeys: oldInvitation.routingKeys?.map(verkeyToDidKey),
         serviceEndpoint: oldInvitation.serviceEndpoint,
       });
-    } else {
-      throw new Error('Missing required serviceEndpoint, routingKeys and/or did fields in connection invitation');
-    }
+    } 
+    // else {
+    //   throw new Error('Missing required serviceEndpoint, routingKeys and/or did fields in connection invitation');
+    // }
   
     const options: OutOfBandInvitationOptions = {
       id: oldInvitation.id,
