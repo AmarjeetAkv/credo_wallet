@@ -1,8 +1,10 @@
 import type { RestAgentModules } from '../../cliAgent'
 import type { OutOfBandInvitationProps, OutOfBandRecordWithInvitationProps } from '../examples'
 import type { AgentMessageType, RecipientKeyOption, CreateInvitationOptions } from '../types'
+import { convertToNewInvitation } from '@credo-ts/core/build/modules/oob/helpers'
 import {
   ConnectionInvitationMessage,
+  // ConnectionInvitationMessage,
   ConnectionRecordProps,
   CreateLegacyInvitationConfig,
   OutOfBandInvitationOptions,
@@ -19,9 +21,9 @@ import {
   KeyType,
   createPeerDidDocumentFromServices,
   PeerDidNumAlgo,
+  DidKey,
   OutOfBandDidCommService,
   InvitationType,
-  DidKey,
 } from '@credo-ts/core'
 import { injectable } from 'tsyringe'
 
@@ -237,82 +239,27 @@ export class OutOfBandController extends Controller {
     connectionRecord: ConnectionRecordExample,
   })
   @Post('/receive-invitation')
-public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps) {
-  const { invitation, ...config } = invitationRequest;
-  console.log("Invitation data received:", invitation);
-  function convertToNewInvitation(oldInvitation: ConnectionInvitationMessage) {
-    let service:any
-    
-    if (oldInvitation.did) {
-      service = oldInvitation.did;
-    } else if (oldInvitation.serviceEndpoint && oldInvitation.recipientKeys && oldInvitation.recipientKeys.length > 0) {
-      service = new OutOfBandDidCommService({
-        id: '#inline',
-        recipientKeys: oldInvitation.recipientKeys?.map(verkeyToDidKey),
-        routingKeys: oldInvitation.routingKeys?.map(verkeyToDidKey),
-        serviceEndpoint: oldInvitation.serviceEndpoint,
-      });
-    } 
-    // else {
-    //   throw new Error('Missing required serviceEndpoint, routingKeys and/or did fields in connection invitation');
-    // }
-  
-    const options: OutOfBandInvitationOptions = {
-      id: oldInvitation.id,
-      label: oldInvitation.label,
-      imageUrl: oldInvitation.imageUrl,
-      appendedAttachments: oldInvitation.appendedAttachments,
-      accept: ['didcomm/aip1', 'didcomm/aip2;env=rfc19'],
-      services: [service],
-      handshakeProtocols: ['https://didcomm.org/connections/1.0'],
-    };
-  
-    const outOfBandInvitation = new OutOfBandInvitation(options);
-    outOfBandInvitation.invitationType = InvitationType.Connection;
-  
-    return outOfBandInvitation;
-  }
-  
-  function verkeyToDidKey(key: string) {
-    if (isDidKey(key)) return key;
-    const publicKeyBase58 = key;
-    const ed25519Key = Key.fromPublicKeyBase58(publicKeyBase58, KeyType.Ed25519);
-    const didKey = new DidKey(ed25519Key);
-    return didKey.did;
-  }
-  
-  function isDidKey(key: string) {
-    return isDid(key, 'key');
-  }
-  
-  function isDid(potentialDid: string, method?: string) {
-    return method ? potentialDid.startsWith(`did:${method}:`) : potentialDid.startsWith('did:');
-  }
-  try {
-    // Convert to the new invitation format
-    const oobInvitation = convertToNewInvitation(
-      JsonTransformer.fromJSON(invitation, ConnectionInvitationMessage)
-    );
-    
-    console.log("Converted OOB Invitation:", oobInvitation);
+  public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps) {
+    const { invitation, ...config } = invitationRequest
 
-    // Pass the converted invitation to the agent's OOrouting: config.routing,B method
-    const { connectionRecord,outOfBandRecord } = await this.agent.oob.receiveInvitation(oobInvitation, {
-        // Add your routing options if needed
-      autoAcceptConnection: true,
-      autoAcceptInvitation: true,
-    });
-    console.log("fetching connection record ", connectionRecord?.toJSON
-
-    )
-    return {
-      connectionRecord: connectionRecord?.toJSON(),
-      outOfBandRecord: outOfBandRecord?.toJSON()
-    };
-  } catch (error) {
-    throw ErrorHandlingService.handle(error);
+    console.log(JSON.stringify(invitationRequest, null, 2));
+    
+    try {
+      const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(invitationRequest, ConnectionInvitationMessage))
+      console.log("message from oob invitaion", oobInvitation)
+      const { outOfBandRecord,connectionRecord} = await this.agent.oob.receiveInvitation(oobInvitation, {autoAcceptConnection: true,
+        autoAcceptInvitation: true,})
+        console.log('connection record',connectionRecord)
+      return {
+        outOfBandRecord: outOfBandRecord.toJSON(),
+        connectionRecord: connectionRecord?.toJSON()
+      }
+    } catch (error) {
+      throw ErrorHandlingService.handle(error)
+    }
   }
-}
+
+
   /**
    * Creates inbound out-of-band record and assigns out-of-band invitation message to it if the
    * message is valid.
