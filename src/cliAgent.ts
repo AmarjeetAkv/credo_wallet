@@ -116,7 +116,7 @@ export async function readRestConfig(path: string) {
   return config
 }
 
-export type RestMultiTenantAgentModules = Awaited<ReturnType<typeof getWithTenantModules>>
+// export type RestMultiTenantAgentModules = Awaited<ReturnType<typeof getWithTenantModules>>
 
 export type RestAgentModules = Awaited<ReturnType<typeof getModules>>
 
@@ -159,10 +159,10 @@ const getModules = (
       registries: [new IndyVdrAnonCredsRegistry()],
       anoncreds,
     }),
-    mediationRecipient: new MediationRecipientModule({
-      mediatorInvitationUrl: 'https://public.mediator.indiciotech.io?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6Q2JzTlloTXJqSGlxWkRUVUFTSGc7c3BlYy9jb25uZWN0aW9ucy8xLjAvaW52aXRhdGlvbiIsICJAaWQiOiAiMDVlYzM5NDItYTEyOS00YWE3LWEzZDQtYTJmNDgwYzNjZThhIiwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwczovL3B1YmxpYy5tZWRpYXRvci5pbmRpY2lvdGVjaC5pbyIsICJyZWNpcGllbnRLZXlzIjogWyJDc2dIQVpxSktuWlRmc3h0MmRIR3JjN3U2M3ljeFlEZ25RdEZMeFhpeDIzYiJdLCAibGFiZWwiOiAiSW5kaWNpbyBQdWJsaWMgTWVkaWF0b3IifQ==',
-      mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
-    }),
+    // mediationRecipient: new MediationRecipientModule({
+    //   mediatorInvitationUrl: 'https://public.mediator.indiciotech.io?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6Q2JzTlloTXJqSGlxWkRUVUFTSGc7c3BlYy9jb25uZWN0aW9ucy8xLjAvaW52aXRhdGlvbiIsICJAaWQiOiAiMDVlYzM5NDItYTEyOS00YWE3LWEzZDQtYTJmNDgwYzNjZThhIiwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwczovL3B1YmxpYy5tZWRpYXRvci5pbmRpY2lvdGVjaC5pbyIsICJyZWNpcGllbnRLZXlzIjogWyJDc2dIQVpxSktuWlRmc3h0MmRIR3JjN3U2M3ljeFlEZ25RdEZMeFhpeDIzYiJdLCAibGFiZWwiOiAiSW5kaWNpbyBQdWJsaWMgTWVkaWF0b3IifQ==',
+    //   mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
+    // }),
     connections: new ConnectionsModule({
       autoAcceptConnections: autoAcceptConnections || true,
     }),
@@ -209,38 +209,38 @@ const getModules = (
 }
 
 // TODO: add object
-const getWithTenantModules = (
-  networkConfig: [IndyVdrPoolConfig, ...IndyVdrPoolConfig[]],
-  didRegistryContractAddress: string,
-  fileServerToken: string,
-  fileServerUrl: string,
-  rpcUrl: string,
-  schemaManagerContractAddress: string,
-  autoAcceptConnections: boolean,
-  autoAcceptCredentials: AutoAcceptCredential,
-  autoAcceptProofs: AutoAcceptProof,
-  walletScheme: AskarMultiWalletDatabaseScheme
-) => {
-  const modules = getModules(
-    networkConfig,
-    didRegistryContractAddress,
-    fileServerToken,
-    fileServerUrl,
-    rpcUrl,
-    schemaManagerContractAddress,
-    autoAcceptConnections,
-    autoAcceptCredentials,
-    autoAcceptProofs,
-    walletScheme
-  )
-  return {
-    tenants: new TenantsModule<typeof modules>({
-      sessionAcquireTimeout: Number(process.env.SESSION_ACQUIRE_TIMEOUT) || Infinity,
-      sessionLimit: Number(process.env.SESSION_LIMIT) || Infinity,
-    }),
-    ...modules,
-  }
-}
+// const getWithTenantModules = (
+//   networkConfig: [IndyVdrPoolConfig, ...IndyVdrPoolConfig[]],
+//   didRegistryContractAddress: string,
+//   fileServerToken: string,
+//   fileServerUrl: string,
+//   rpcUrl: string,
+//   schemaManagerContractAddress: string,
+//   autoAcceptConnections: boolean,
+//   autoAcceptCredentials: AutoAcceptCredential,
+//   autoAcceptProofs: AutoAcceptProof,
+//   walletScheme: AskarMultiWalletDatabaseScheme
+// ) => {
+//   const modules = getModules(
+//     networkConfig,
+//     didRegistryContractAddress,
+//     fileServerToken,
+//     fileServerUrl,
+//     rpcUrl,
+//     schemaManagerContractAddress,
+//     autoAcceptConnections,
+//     autoAcceptCredentials,
+//     autoAcceptProofs,
+//     walletScheme
+//   )
+//   return {
+//     tenants: new TenantsModule<typeof modules>({
+//       sessionAcquireTimeout: Number(process.env.SESSION_ACQUIRE_TIMEOUT) || Infinity,
+//       sessionLimit: Number(process.env.SESSION_LIMIT) || Infinity,
+//     }),
+//     ...modules,
+//   }
+// }
 
 async function generateSecretKey(length: number = 32): Promise<string> {
   // Asynchronously generate a buffer containing random values
@@ -355,18 +355,18 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
     ]
   }
 
-  const tenantModule = await getWithTenantModules(
-    networkConfig,
-    didRegistryContractAddress || '',
-    fileServerToken || '',
-    fileServerUrl || '',
-    rpcUrl || '',
-    schemaManagerContractAddress || '',
-    autoAcceptConnections || true,
-    autoAcceptCredentials || AutoAcceptCredential.Always,
-    autoAcceptProofs || AutoAcceptProof.ContentApproved,
-    walletScheme || AskarMultiWalletDatabaseScheme.ProfilePerWallet
-  )
+  // const tenantModule = await getWithTenantModules(
+  //   networkConfig,
+  //   didRegistryContractAddress || '',
+  //   fileServerToken || '',
+  //   fileServerUrl || '',
+  //   rpcUrl || '',
+  //   schemaManagerContractAddress || '',
+  //   autoAcceptConnections || true,
+  //   autoAcceptCredentials || AutoAcceptCredential.Always,
+  //   autoAcceptProofs || AutoAcceptProof.ContentApproved,
+  //   walletScheme || AskarMultiWalletDatabaseScheme.ProfilePerWallet
+  // )
   const modules = getModules(
     networkConfig,
     didRegistryContractAddress || '',
@@ -382,11 +382,6 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   const agent = new Agent({
     config: agentConfig,
     modules: {
-      ...(afjConfig.tenancy
-        ? {
-            ...tenantModule,
-          }
-        : {}),
       ...modules,
     },
     dependencies: agentDependencies,
