@@ -241,20 +241,27 @@ export class OutOfBandController extends Controller {
   @Post('/receive-invitation')
   public async receiveInvitation(@Body() invitationRequest: ReceiveInvitationProps) {
     const { invitation, ...config } = invitationRequest
-
-    try {
-      const transformedInvitation = JsonTransformer.fromJSON(invitationRequest, ConnectionInvitationMessage);
-      console.log('Transformed Invitation:', transformedInvitation);
-    } catch (error) {
-      console.error('Error during transformation:', error);
+    let data = {
+      "@type": "https://didcomm.org/connections/1.0/invitation",
+      "@id": "98357233-7362-4859-82d1-2b2467afc389",
+      "label": "issuer_acapy_1_0 Agent",
+      "recipientKeys": [
+       "GnnTMB2saJZn2bcQNGepZSJF5nPDBrZTUNRjmGbsfTWh"
+      ],
+      "serviceEndpoint": "http://100.28.204.79:9013"
     }
-    
+    console.log('invitationRequest: ',JSON.stringify(invitationRequest,null,2));
     try {
-      const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(invitationRequest, ConnectionInvitationMessage))
+      const oobInvitation = convertToNewInvitation(JsonTransformer.fromJSON(data, ConnectionInvitationMessage))
       console.log("message from oob invitaion", oobInvitation)
-      const { outOfBandRecord,connectionRecord} = await this.agent.oob.receiveInvitation(oobInvitation, {autoAcceptConnection: true,
-        autoAcceptInvitation: true,})
-        console.log('connection record',connectionRecord)
+      const { outOfBandRecord,connectionRecord} = await this.agent.oob.receiveInvitation(oobInvitation, {
+          autoAcceptConnection: true,
+          autoAcceptInvitation: true,
+      })
+
+      console.log('connection record',connectionRecord)
+      console.log('outOfBandRecord record ',outOfBandRecord);
+
       return {
         outOfBandRecord: outOfBandRecord.toJSON(),
         connectionRecord: connectionRecord?.toJSON()
