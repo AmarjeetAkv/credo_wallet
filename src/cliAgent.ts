@@ -61,7 +61,7 @@ import { TsLogger } from './utils/logger'
 import { Server, WebSocketServer } from 'ws'
 import express from 'express'
 import { Socket } from 'dgram'
-
+import { connect } from 'ngrok'
 
 export type Transports = 'ws' | 'http'
 export type InboundTransport = {
@@ -430,12 +430,29 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
     const OutboundTransport = outboundTransportMapping[outboundTransport]
     agent.registerOutboundTransport(new OutboundTransport())
   }
+  const httpInbound = new HttpInboundTransport({
+    port: 4002,
+  })
 
   // Register inbound transports
   for (const inboundTransport of inboundTransports) {
     const InboundTransport = inboundTransportMapping[inboundTransport.transport]
     agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'127.0.0.1' }))
   }
+
+  const endpoint = await connect(3001)
+  console.log('Endpoint: ',endpoint)
+  httpInbound.app.get('/invitation', async (req, res) => {
+    if (typeof req.query.c_i === 'string') {
+      const invitation = ConnectionInvitationMessage.fromUrl(req.url)
+      console.log('invitation httpInboundTransport :',invitation)
+      res.send(invitation.toJSON())
+    } else {
+      const { outOfBandInvitation } = await agent.oob.createInvitation()
+      const httpEndpoint = config.endpoints.find((e) => e.startsWith('http'))
+      res.send(outOfBandInvitation.toUrl({ domain: endpoint + '/invitation' }))
+    }
+  })
 
   await agent.initialize()
 
