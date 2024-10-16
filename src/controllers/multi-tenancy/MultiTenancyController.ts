@@ -1,4 +1,4 @@
-import type { RestAgentModules, RestMultiTenantAgentModules } from '../../cliAgent'
+import type { RestAgentModules } from '../../cliAgent'
 import type { Version } from '../examples'
 import type { RecipientKeyOption, SchemaMetadata } from '../types'
 import type { PolygonDidCreateOptions } from '@ayanworks/credo-polygon-w3c-module/build/dids'
@@ -88,9 +88,9 @@ import { Body, Controller, Delete, Get, Post, Query, Route, Tags, Path, Example,
 @Route('/multi-tenancy')
 @injectable()
 export class MultiTenancyController extends Controller {
-  private readonly agent: Agent<RestMultiTenantAgentModules>
+  private readonly agent: Agent<any>
 
-  public constructor(agent: Agent<RestMultiTenantAgentModules>) {
+  public constructor(agent: Agent<any>) {
     super()
     this.agent = agent
   }
@@ -155,7 +155,7 @@ export class MultiTenancyController extends Controller {
     const { keyType, seed, network, method } = createDidOptions
 
     let result
-    await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
+    await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent:any) => {
       if (!keyType) {
         throw Error('keyType is required')
       }
@@ -370,7 +370,7 @@ export class MultiTenancyController extends Controller {
     let did: string
     let didDocument: any
 
-    await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
+    await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent:any) => {
       if (!seed) {
         throw Error('Seed is required')
       }
@@ -387,6 +387,7 @@ export class MultiTenancyController extends Controller {
           keyType: createDidOptions.keyType,
           seed: TypedArrayEncoder.fromString(seed),
         })
+        //@ts-ignore
         const didKeyResponse = await tenantAgent.dids.create<KeyDidCreateOptions>({
           method: DidMethod.Key,
           options: {
@@ -428,7 +429,7 @@ export class MultiTenancyController extends Controller {
     if (!createDidOptions.keyType) {
       throw Error('keyType is required')
     }
-
+//@ts-ignore
     await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
       const didRouting = await tenantAgent.mediationRecipient.getRouting({})
       const didDocument = createPeerDidDocumentFromServices([
@@ -439,6 +440,7 @@ export class MultiTenancyController extends Controller {
           serviceEndpoint: didRouting.endpoints[0],
         },
       ])
+      //@ts-ignore
       const didPeerResponse = await tenantAgent.dids.create<PeerDidNumAlgo2CreateOptions>({
         didDocument,
         method: DidMethod.Peer,
@@ -471,7 +473,7 @@ export class MultiTenancyController extends Controller {
     if (keyType !== KeyType.Ed25519 && keyType !== KeyType.Bls12381g2) {
       throw Error('Only ed25519 and bls12381g2 key type supported')
     }
-
+//@ts-ignore
     await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
       if (!seed) {
         throw Error('Seed is required')
@@ -562,6 +564,7 @@ export class MultiTenancyController extends Controller {
   public async getDids(@Path('tenantId') tenantId: string) {
     try {
       let getDids
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         getDids = await tenantAgent.dids.getCreatedDids()
       })
@@ -576,6 +579,7 @@ export class MultiTenancyController extends Controller {
   public async didNymTransaction(@Path('tenantId') tenantId: string, @Body() didNymTransaction: DidNymTransaction) {
     let didCreateSubmitResult
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         didCreateSubmitResult = await tenantAgent.dids.create({
           did: didNymTransaction.did,
@@ -606,6 +610,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let signedTransaction
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         signedTransaction = await tenantAgent.modules.indyVdr.endorseTransaction(
           endorserTransaction.transaction,
@@ -625,6 +630,7 @@ export class MultiTenancyController extends Controller {
   public async getConnectionById(@Path('tenantId') tenantId: string, @Path('connectionId') connectionId: RecordId) {
     try {
       let connectionRecord
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const connection = await tenantAgent.connections.findById(connectionId)
 
@@ -647,6 +653,7 @@ export class MultiTenancyController extends Controller {
     let outOfBandRecord: OutOfBandRecord | undefined
     let invitationDid: string | undefined
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         if (config?.invitationDid) {
           invitationDid = config?.invitationDid
@@ -660,6 +667,7 @@ export class MultiTenancyController extends Controller {
               serviceEndpoint: didRouting.endpoints[0],
             },
           ])
+          //@ts-ignore
           const did = await tenantAgent.dids.create<PeerDidNumAlgo2CreateOptions>({
             didDocument,
             method: 'peer',
@@ -702,6 +710,7 @@ export class MultiTenancyController extends Controller {
     let getInvitation
     try {
       let routing: Routing
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         if (config?.recipientKey) {
           routing = {
@@ -741,6 +750,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let receiveInvitationRes
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const { invitation, ...config } = invitationRequest
         const invite = new OutOfBandInvitation({ ...invitation, handshakeProtocols: invitation.handshake_protocols })
@@ -765,6 +775,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let receiveInvitationUrl
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const { invitationUrl, ...config } = invitationRequest
         const { outOfBandRecord, connectionRecord } = await tenantAgent.oob.receiveInvitationFromUrl(
@@ -787,6 +798,7 @@ export class MultiTenancyController extends Controller {
   public async getAllOutOfBandRecords(@Path('tenantId') tenantId: string, @Path('invitationId') invitationId?: string) {
     let outOfBandRecordsRes
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         let outOfBandRecords
         outOfBandRecords = await tenantAgent.oob.getAll()
@@ -815,6 +827,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let connectionRecord
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         if (outOfBandId) {
           connectionRecord = await tenantAgent.connections.findAllByOutOfBandId(outOfBandId)
@@ -840,6 +853,7 @@ export class MultiTenancyController extends Controller {
   public async getInvitation(@Path('invitationId') invitationId: string, @Path('tenantId') tenantId: string) {
     try {
       let invitationJson
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const outOfBandRecord = await tenantAgent.oob.findByCreatedInvitationId(invitationId)
 
@@ -864,7 +878,7 @@ export class MultiTenancyController extends Controller {
     try {
       let createSchemaTxResult: any
       const { issuerId, name, version, attributes, endorserDid, endorse } = schema
-
+//@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const schemaPayload = {
           issuerId,
@@ -1045,6 +1059,7 @@ export class MultiTenancyController extends Controller {
     tenantId: string
   ) {
     let schemaRecord
+    //@ts-ignore
     await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
       const { issuerId, name, version, attributes } = schema
       const { schemaState } = await tenantAgent.modules.anoncreds.registerSchema({
@@ -1090,6 +1105,7 @@ export class MultiTenancyController extends Controller {
     tenantId: string
   ) {
     let credentialDefinitionRecord
+    //@ts-ignore
     await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
       const { credentialDefinitionState } = await tenantAgent.modules.anoncreds.registerCredentialDefinition({
         credentialDefinition,
@@ -1128,6 +1144,7 @@ export class MultiTenancyController extends Controller {
   public async getSchemaById(@Path('schemaId') schemaId: SchemaId, @Path('tenantId') tenantId: string) {
     let schemBySchemaId
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         schemBySchemaId = await tenantAgent.modules.anoncreds.getSchema(schemaId)
 
@@ -1165,6 +1182,7 @@ export class MultiTenancyController extends Controller {
     try {
       let registerCredentialDefinitionResult: any
       const { issuerId, schemaId, tag, endorse, endorserDid } = credentialDefinitionRequest
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         credentialDefinitionRequest.endorse = credentialDefinitionRequest.endorse
           ? credentialDefinitionRequest.endorse
@@ -1245,6 +1263,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let credentialDefinitionResult: any
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         credentialDefinitionResult = await tenantAgent.modules.anoncreds.getCredentialDefinition(credentialDefinitionId)
       })
@@ -1273,6 +1292,7 @@ export class MultiTenancyController extends Controller {
   public async createOffer(@Body() createOfferOptions: CreateOfferOptions, @Path('tenantId') tenantId: string) {
     let offer
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         offer = await tenantAgent.credentials.offerCredential({
           connectionId: createOfferOptions.connectionId,
@@ -1295,6 +1315,7 @@ export class MultiTenancyController extends Controller {
 
     try {
       let invitationDid: string | undefined
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const linkSecretIds = await tenantAgent.modules.anoncreds.getLinkSecretIds()
         if (linkSecretIds.length === 0) {
@@ -1313,6 +1334,7 @@ export class MultiTenancyController extends Controller {
               serviceEndpoint: didRouting.endpoints[0],
             },
           ])
+          //@ts-ignore
           const did = await tenantAgent.dids.create<PeerDidNumAlgo2CreateOptions>({
             didDocument,
             method: 'peer',
@@ -1367,6 +1389,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let acceptOffer
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const linkSecretIds = await tenantAgent.modules.anoncreds.getLinkSecretIds()
         if (linkSecretIds.length === 0) {
@@ -1394,6 +1417,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let credentialRecord
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const credential = await tenantAgent.credentials.getById(credentialRecordId)
         credentialRecord = credential.toJSON()
@@ -1415,6 +1439,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let credentialRecord
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const credentialRepository = tenantAgent.dependencyManager.resolve(CredentialRepository)
         const credentials = await credentialRepository.findByQuery(tenantAgent.context, {
@@ -1435,6 +1460,7 @@ export class MultiTenancyController extends Controller {
   public async getAllProofs(@Path('tenantId') tenantId: string, @Query('threadId') threadId?: string) {
     let proofRecord
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         let proofs = await tenantAgent.proofs.getAll()
         if (threadId) proofs = proofs.filter((p: any) => p.threadId === threadId)
@@ -1452,6 +1478,7 @@ export class MultiTenancyController extends Controller {
   public async proofFormData(@Path('proofRecordId') proofRecordId: string, @Path('tenantId') tenantId: string) {
     let proof
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         proof = await tenantAgent.proofs.getFormatData(proofRecordId)
       })
@@ -1467,6 +1494,7 @@ export class MultiTenancyController extends Controller {
   public async requestProof(@Body() requestProofOptions: RequestProofOptions, @Path('tenantId') tenantId: string) {
     let proof
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const requestProofPayload = {
           connectionId: requestProofOptions.connectionId,
@@ -1496,6 +1524,7 @@ export class MultiTenancyController extends Controller {
     let oobProofRecord
     try {
       let invitationDid: string | undefined
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         if (createRequestOptions?.invitationDid) {
           invitationDid = createRequestOptions?.invitationDid
@@ -1509,6 +1538,7 @@ export class MultiTenancyController extends Controller {
               serviceEndpoint: didRouting.endpoints[0],
             },
           ])
+          //@ts-ignore
           const did = await tenantAgent.dids.create<PeerDidNumAlgo2CreateOptions>({
             didDocument,
             method: 'peer',
@@ -1578,6 +1608,7 @@ export class MultiTenancyController extends Controller {
   ) {
     let proofRecord
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const requestedCredentials = await tenantAgent.proofs.selectCredentialsForRequest({
           proofRecordId,
@@ -1603,6 +1634,7 @@ export class MultiTenancyController extends Controller {
   public async acceptPresentation(@Path('tenantId') tenantId: string, @Path('proofRecordId') proofRecordId: string) {
     let proof
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         proof = await tenantAgent.proofs.acceptPresentation({ proofRecordId })
       })
@@ -1618,6 +1650,7 @@ export class MultiTenancyController extends Controller {
   public async getProofById(@Path('tenantId') tenantId: string, @Path('proofRecordId') proofRecordId: RecordId) {
     let proofRecord
     try {
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const proof = await tenantAgent.proofs.getById(proofRecordId)
         proofRecord = proof.toJSON()
@@ -1644,6 +1677,7 @@ export class MultiTenancyController extends Controller {
   public async createDidWeb(@Path('tenantId') tenantId: string, @Body() didOptions: DidCreate) {
     try {
       let didDoc
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         if (!didOptions.seed) {
           throw Error('Seed is required')
@@ -1695,10 +1729,12 @@ export class MultiTenancyController extends Controller {
   public async createDidKey(@Path('tenantId') tenantId: string, @Body() didOptions: DidCreate) {
     try {
       let didCreateResponse
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         if (!didOptions.seed) {
           throw new BadRequestError('Seed is required')
         }
+        //@ts-ignore
         didCreateResponse = await tenantAgent.dids.create<KeyDidCreateOptions>({
           //TODO enum for method
           method: 'key',
@@ -1737,6 +1773,7 @@ export class MultiTenancyController extends Controller {
   ) {
     try {
       let questionAnswerRecords: QuestionAnswerRecord[] = []
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         questionAnswerRecords = await tenantAgent.modules.questionAnswer.findAllByQuery({
           connectionId,
@@ -1774,6 +1811,7 @@ export class MultiTenancyController extends Controller {
     try {
       const { question, validResponses, detail } = config
       let questionAnswerRecord
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         questionAnswerRecord = await tenantAgent.modules.questionAnswer.sendQuestion(connectionId, {
           question,
@@ -1804,6 +1842,7 @@ export class MultiTenancyController extends Controller {
   ) {
     try {
       let questionAnswerRecord
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const record = await tenantAgent.modules.questionAnswer.sendAnswer(id, request.response)
         questionAnswerRecord = record.toJSON()
@@ -1826,6 +1865,7 @@ export class MultiTenancyController extends Controller {
   public async getQuestionAnswerRecordById(@Path('id') id: RecordId, @Path('tenantId') tenantId: string) {
     try {
       let questionAnswerRecord
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         const record = await tenantAgent.modules.questionAnswer.findById(id)
         questionAnswerRecord = record
@@ -1851,6 +1891,7 @@ export class MultiTenancyController extends Controller {
   public async getBasicMessages(@Path('connectionId') connectionId: RecordId, @Path('tenantId') tenantId: string) {
     try {
       let basicMessageRecords
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         basicMessageRecords = await tenantAgent.basicMessages.findAllByQuery({ connectionId })
       })
@@ -1880,6 +1921,7 @@ export class MultiTenancyController extends Controller {
   ) {
     try {
       let basicMessageRecord
+      //@ts-ignore
       await this.agent.modules.tenants.withTenantAgent({ tenantId }, async (tenantAgent) => {
         basicMessageRecord = await tenantAgent.basicMessages.sendMessage(connectionId, request.content)
       })

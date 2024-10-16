@@ -1,4 +1,4 @@
-import type { RestMultiTenantAgentModules } from '../cliAgent'
+// import type { RestMultiTenantAgentModules } from '../cliAgent'
 import type { ServerConfig } from '../utils/ServerConfig'
 import type { Agent, CredentialStateChangedEvent } from '@credo-ts/core'
 
@@ -7,7 +7,7 @@ import { CredentialEventTypes } from '@credo-ts/core'
 import { sendWebSocketEvent } from './WebSocketEvents'
 import { sendWebhookEvent } from './WebhookEvent'
 
-export const credentialEvents = async (agent: Agent<RestMultiTenantAgentModules>, config: ServerConfig) => {
+export const credentialEvents = async (agent: Agent<any>, config: ServerConfig) => {
   agent.events.on(CredentialEventTypes.CredentialStateChanged, async (event: CredentialStateChangedEvent) => {
     const record = event.payload.credentialRecord
 
@@ -21,6 +21,7 @@ export const credentialEvents = async (agent: Agent<RestMultiTenantAgentModules>
     if (event.metadata.contextCorrelationId !== 'default' && record?.connectionId) {
       await agent.modules.tenants.withTenantAgent(
         { tenantId: event.metadata.contextCorrelationId },
+        //@ts-ignore
         async (tenantAgent) => {
           const connectionRecord = await tenantAgent.connections.findById(record.connectionId!)
           const data = await tenantAgent.credentials.getFormatData(record.id)
