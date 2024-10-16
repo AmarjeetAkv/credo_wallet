@@ -23,7 +23,7 @@
       "indyNamespace": "bcovrin:testnet"
     }
   ],
-  "endpoint": ["http://54.172.68.213:4002","ws://54.172.68.213:4002"],
+  "endpoint": ["http://54.172.68.213:4002","wss://54.172.68.213:4002"],
   "autoAcceptConnections": true,
   "autoAcceptCredentials": "always",
   "autoAcceptProofs": "contentApproved",
