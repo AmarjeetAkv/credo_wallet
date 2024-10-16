@@ -243,10 +243,10 @@ export class OutOfBandController extends Controller {
     const { invitation, ...config } = invitationRequest
     let data = {
       "@type": "https://didcomm.org/connections/1.0/invitation",
-      "@id": "320ea72c-cbde-49fe-9063-64a72e42e1d1",
+      "@id":"87506561-da89-4554-bfed-04b676078b5d",
       "label": "issuer_acapy_1_0 Agent",
       "recipientKeys": [
-        "AxHA1FcugrpaVyys2JfeMphC2eb2YAoc2cMfiTKdi9uU"
+         "GYwk25LMJzFRxTpKyJcroWtTBmnnChMWFTy3NNS9jYL5"
       ],
       "serviceEndpoint": "http://100.28.204.79:9013"
     }
