@@ -1,4 +1,4 @@
-import type { AgentMessageProcessedEvent, InitConfig } from '@credo-ts/core'
+import type { AgentMessageProcessedEvent, CredentialStateChangedEvent, InitConfig, ProofStateChangedEvent } from '@credo-ts/core'
 import type { WalletConfig } from '@credo-ts/core/build/types'
 import type { IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
 
@@ -38,6 +38,8 @@ import {
   MediatorPickupStrategy,
   ConnectionInvitationMessage,
   AgentEventTypes,
+  CredentialEventTypes,
+  ProofEventTypes,
 } from '@credo-ts/core'
 import {
   IndyVdrAnonCredsRegistry,
@@ -476,6 +478,15 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
     agent.config.logger.debug(`Processed inbound message: ${JSON.stringify(data.payload.message.toJSON())}`)
   })
 
+  agent.events.on(CredentialEventTypes.CredentialStateChanged,(data: CredentialStateChangedEvent)=>{
+    console.log('🔥  * * * * * * CredentialStateChangedEvent emitted ::: ' + JSON.stringify(data));
+    agent.config.logger.debug(`>> Credential state changed: ${JSON.stringify(data.payload.credentialRecord.toJSON())}`)
+  })
+
+  agent.events.on(ProofEventTypes.ProofStateChanged,(data: ProofStateChangedEvent)=>{
+    console.log('🔥  * * * * * * Proof State Changed Event emitted ::: ' + JSON.stringify(data));
+    agent.config.logger.debug(`>> Proof state changed: ${data}`)
+  })
   let token: string = ''
   const genericRecord = await agent.genericRecords.getAll()
 
