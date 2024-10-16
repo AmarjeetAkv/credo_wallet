@@ -437,7 +437,7 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   // Register inbound transports
   for (const inboundTransport of inboundTransports) {
     const InboundTransport = inboundTransportMapping[inboundTransport.transport]
-    agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'127.0.0.1' }))
+    agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'54.172.68.213' }))
   }
 
   // const endpoint = await connect(3001)
