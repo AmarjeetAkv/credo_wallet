@@ -291,7 +291,7 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
     },
     // mediatorConnectionsInvite: 'https://http-mediator.nborbit.com?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIzN2UwYjMxZC0yYWNiLTRjZDMtOTY1MS04NmMzOTFjZGNkZDAiLCAicmVjaXBpZW50S2V5cyI6IFsiOGVtajVaUFVZWkFEWldSdFJTN0xhWXFYOXl6eHdxR0ZGeWFGcHhBUUZ1dSJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaHR0cC1tZWRpYXRvci5uYm9yYml0LmNvbSIsICJsYWJlbCI6ICJNZWRpYXRvciJ9',
     // mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
-    endpoints:['http://54.172.68.213:4002'],
+    // endpoints:['127.0.0.1:5000'],
     ...afjConfig,
     logger,
     autoUpdateStorageOnStartup: true,
@@ -390,19 +390,25 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
 
   const apps = express()
   // console.log('Apps:',apps);  
-  // const wsTransport = new WsOutboundTransport()
-  // const httpTransport = new HttpOutboundTransport()
+  const wsTransport = new WsOutboundTransport()
+  const httpTransport = new HttpOutboundTransport()
   // const socketServer = new WebSocketServer({ port:4003,host:'127.0.0.1' })
-  // // console.log('socketServer:',socketServer)
+  // console.log('socketServer:',socketServer)
   // const wsInboundTransport = new WsInboundTransport({server:socketServer})
-  // const httpInbound = new HttpInboundTransport({
-  //   port: 4003
-  // })
+  const httpInbound = new HttpInboundTransport({
+    port:4002,
+    app:apps,
+    path:'/'
+  })
 
-  // agent.registerOutboundTransport(wsTransport)
-  // agent.registerOutboundTransport(httpTransport)
+  console.log('wsTransport: ',wsTransport)
+  console.log('httpTransport: ',httpTransport)
+  console.log('httpInbound: ',httpInbound)
+
+  agent.registerOutboundTransport(wsTransport)
+  agent.registerOutboundTransport(httpTransport)
   // agent.registerInboundTransport(wsInboundTransport)
-  // agent.registerInboundTransport(httpInbound);
+  agent.registerInboundTransport(httpInbound);
 
   // httpInbound.app.get('/invitation', async (req, res) => {
   //   if (typeof req.query.d_m === 'string') {
@@ -423,46 +429,48 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   //   }
   // })
 
-  // Register outbound transports
-  try {
-    console.log('outboundTransports: ',outboundTransports)
-    console.log('inboundTransports: ',inboundTransports)
-    console.log('Registration start... ')
-    for (const outboundTransport of outboundTransports) {
-      const OutboundTransport = outboundTransportMapping[outboundTransport]
-      agent.registerOutboundTransport(new OutboundTransport())
-    }
-    // const httpInbound = new HttpInboundTransport({
-    //   port: 4002,
-    // })
-  
-    // Register inbound transports
-    for (const inboundTransport of inboundTransports) {
-      const InboundTransport = inboundTransportMapping[inboundTransport.transport]
-      agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'54.172.68.213' }))
-    }
-    console.log('Registration done... ')
-  } catch (error) {
-    console.log('Register Outbound Error: ',error);
-  }
-
-  // const endpoint = await connect(3001)
-  // console.log('Endpoint: ',endpoint)
-  // httpInbound.app.get('/invitation', async (req, res) => {
-  //   if (typeof req.query.c_i === 'string') {
-  //     const invitation = ConnectionInvitationMessage.fromUrl(req.url)
-  //     console.log('invitation httpInboundTransport :',invitation)
-  //     res.send(invitation.toJSON())
-  //   } else {
-  //     const { outOfBandInvitation } = await agent.oob.createInvitation()
-  //     const httpEndpoint = config.endpoints.find((e) => e.startsWith('http'))
-  //     res.send(outOfBandInvitation.toUrl({ domain: endpoint + '/invitation' }))
-  //   }
+  // const httpInbound = new HttpInboundTransport({
+  //   port: 4002,
   // })
-  console.log('Agent initialize start')
 
+  // Register outbound transports
+  console.log('outboundTransports: ',outboundTransports)
+  console.log('inboundTransports: ',inboundTransports)
+  // for (const outboundTransport of outboundTransports) {
+  //   console.log('It outboundTransport',outboundTransport)
+  //   const OutboundTransport = outboundTransportMapping[outboundTransport]
+  //   agent.registerOutboundTransport(new OutboundTransport())
+  // }
+
+  // // Register inbound transports
+  // for (const inboundTransport of inboundTransports) {
+  //   console.log('It inboundTransports',inboundTransport)
+  //   const InboundTransport = inboundTransportMapping[inboundTransport.transport]
+  //   agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port }))
+  // }
+
+// console.log('httpInbound: ',httpInbound.start(agent))
+//   // const endpoint = await connect(3001)
+//   // console.log('Endpoint: ',endpoint)
+//   httpInbound.app.get('/invitation', async (req, res) => {
+//     console.log('Request: ',req)
+//     console.log('Responses',res);
+//     if (typeof req.query.c_i === 'string') {
+//       const invitation = ConnectionInvitationMessage.fromUrl(req.url)
+//       console.log('invitation httpInboundTransport :',invitation)
+//       res.send(invitation.toJSON())
+//     } else {
+//       console.log('Else')
+//       const { outOfBandInvitation } = await agent.oob.createInvitation()
+//       const httpEndpoint = config.endpoints.find((e) => e.startsWith('http'))
+//       console.log('HttpsEndpoint',httpEndpoint)
+//       res.send(outOfBandInvitation.toUrl({ domain: httpEndpoint + '/invitation' }))
+//     }
+//   })
+  console.log('Agent start init ')
   await agent.initialize()
-  console.log('Agent initialize End')
+  console.log('Agent start end ')
+
   let token: string = ''
   const genericRecord = await agent.genericRecords.getAll()
 
