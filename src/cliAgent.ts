@@ -1,4 +1,4 @@
-import type { InitConfig } from '@credo-ts/core'
+import type { AgentMessageProcessedEvent, InitConfig } from '@credo-ts/core'
 import type { WalletConfig } from '@credo-ts/core/build/types'
 import type { IndyVdrPoolConfig } from '@credo-ts/indy-vdr'
 
@@ -37,6 +37,7 @@ import {
   MediationRecipientModule,
   MediatorPickupStrategy,
   ConnectionInvitationMessage,
+  AgentEventTypes,
 } from '@credo-ts/core'
 import {
   IndyVdrAnonCredsRegistry,
@@ -470,6 +471,10 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   console.log('Agent start init ')
   await agent.initialize()
   console.log('Agent start end ')
+
+  agent.events.on(AgentEventTypes.AgentMessageProcessed, (data: AgentMessageProcessedEvent) => {
+    agent.config.logger.debug(`Processed inbound message: ${JSON.stringify(data.payload.message.toJSON())}`)
+  })
 
   let token: string = ''
   const genericRecord = await agent.genericRecords.getAll()
