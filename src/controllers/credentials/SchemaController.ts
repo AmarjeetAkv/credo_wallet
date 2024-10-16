@@ -67,15 +67,15 @@ export class SchemaController extends Controller {
   @Example(CreateSchemaSuccessful)
   public async createSchema(@Body() schema: CreateSchemaInput) {
     try {
-      const { issuerId, name, version, attributes } = schema
+      const {  name, version, attributes } = schema
 
       const schemaPayload = {
-        issuerId,
+        // issuerId,
         name,
         version,
         attrNames: attributes,
       }
-      const createSchemaPayload = {
+      const createSchemaPayload:any = {
         schema: schemaPayload,
         options: {
           endorserMode: '',
@@ -85,7 +85,7 @@ export class SchemaController extends Controller {
 
       if (!schema.endorse) {
         createSchemaPayload.options.endorserMode = EndorserMode.Internal
-        createSchemaPayload.options.endorserDid = issuerId
+        // createSchemaPayload.options.endorserDid = issuerId
       } else {
         if (!schema.endorserDid) {
           throw new BadRequestError(ENDORSER_DID_NOT_PRESENT)
