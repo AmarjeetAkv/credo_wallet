@@ -291,7 +291,7 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
     },
     // mediatorConnectionsInvite: 'https://http-mediator.nborbit.com?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIzN2UwYjMxZC0yYWNiLTRjZDMtOTY1MS04NmMzOTFjZGNkZDAiLCAicmVjaXBpZW50S2V5cyI6IFsiOGVtajVaUFVZWkFEWldSdFJTN0xhWXFYOXl6eHdxR0ZGeWFGcHhBUUZ1dSJdLCAic2VydmljZUVuZHBvaW50IjogImh0dHBzOi8vaHR0cC1tZWRpYXRvci5uYm9yYml0LmNvbSIsICJsYWJlbCI6ICJNZWRpYXRvciJ9',
     // mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
-    endpoints:['127.0.0.1:5000'],
+    endpoints:['http://54.172.68.213:4002'],
     ...afjConfig,
     logger,
     autoUpdateStorageOnStartup: true,
@@ -459,9 +459,10 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   //     res.send(outOfBandInvitation.toUrl({ domain: endpoint + '/invitation' }))
   //   }
   // })
+  console.log('Agent initialize start')
 
   await agent.initialize()
-
+  console.log('Agent initialize End')
   let token: string = ''
   const genericRecord = await agent.genericRecords.getAll()
 
