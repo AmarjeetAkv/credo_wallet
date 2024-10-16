@@ -424,20 +424,26 @@ export async function runRestAgent(restConfig: AriesRestConfig) {
   // })
 
   // Register outbound transports
-  console.log('outboundTransports: ',outboundTransports)
-  console.log('inboundTransports: ',inboundTransports)
-  for (const outboundTransport of outboundTransports) {
-    const OutboundTransport = outboundTransportMapping[outboundTransport]
-    agent.registerOutboundTransport(new OutboundTransport())
-  }
-  // const httpInbound = new HttpInboundTransport({
-  //   port: 4002,
-  // })
-
-  // Register inbound transports
-  for (const inboundTransport of inboundTransports) {
-    const InboundTransport = inboundTransportMapping[inboundTransport.transport]
-    agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'54.172.68.213' }))
+  try {
+    console.log('outboundTransports: ',outboundTransports)
+    console.log('inboundTransports: ',inboundTransports)
+    console.log('Registration start... ')
+    for (const outboundTransport of outboundTransports) {
+      const OutboundTransport = outboundTransportMapping[outboundTransport]
+      agent.registerOutboundTransport(new OutboundTransport())
+    }
+    // const httpInbound = new HttpInboundTransport({
+    //   port: 4002,
+    // })
+  
+    // Register inbound transports
+    for (const inboundTransport of inboundTransports) {
+      const InboundTransport = inboundTransportMapping[inboundTransport.transport]
+      agent.registerInboundTransport(new InboundTransport({ port: inboundTransport.port,path:'54.172.68.213' }))
+    }
+    console.log('Registration done... ')
+  } catch (error) {
+    console.log('Register Outbound Error: ',error);
   }
 
   // const endpoint = await connect(3001)
